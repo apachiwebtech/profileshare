@@ -12,6 +12,7 @@ export async function generateMetadata({ params }) {
       const fullName = `${user.firstname || ''} ${user.lastname || ''}`.trim();
       const designation = user.designation || '';
       const profileImage = user.profile_image;
+      const address = user.address || '';
 
       // Build keywords from user data
       const keywords = [
@@ -20,44 +21,45 @@ export async function generateMetadata({ params }) {
         'profile',
         'professional',
         'The Talent Club',
-        user.skills,
-        user.industry
+        address
       ].filter(Boolean).join(', ');
+
+      // Ensure profile image URL is absolute and accessible
+      const profileImageUrl = profileImage 
+        ? `https://nodejs.thetalentclub.co.in/upload/profile/${profileImage}`
+        : 'https://thetalentclub.co.in/whitelogo.png';
+
+      const description = designation
+        ? `${fullName} - ${designation}${address ? ` from ${address}` : ''}. View ${fullName}'s professional profile, experience, and connect on The Talent Club.`
+        : `View ${fullName}'s professional profile and connect on The Talent Club.`;
 
       return {
         title: fullName ? `${fullName} | The Talent Club` : "Professional Profile | The Talent Club",
-        description: designation
-          ? `${fullName} - ${designation}. View ${fullName}'s professional profile, experience, and connect on The Talent Club.`
-          : `View ${fullName}'s professional profile and connect on The Talent Club.`,
+        description,
         keywords,
         openGraph: {
           title: `${fullName} | The Talent Club`,
-          description: designation
-            ? `${fullName} - ${designation}. View ${fullName}'s professional profile, experience, and connect on The Talent Club.`
-            : `View ${fullName}'s professional profile and connect on The Talent Club.`,
+          description,
           type: 'profile',
           url: `https://thetalentclub.co.in/share/${userId}`,
           siteName: 'The Talent Club',
-          images: profileImage ? [
+          images: [
             {
-              url: `https://nodejs.thetalentclub.co.in/upload/profile/${profileImage}`,
+              url: profileImageUrl,
               width: 400,
               height: 400,
               alt: `${fullName}'s profile picture`,
-              type: 'image/png'
+              type: 'image/png',
+              secureUrl: profileImageUrl
             }
-          ] : [],
+          ],
           locale: 'en_US',
         },
         twitter: {
           card: 'summary_large_image',
           title: `${fullName} | The Talent Club`,
-          description: designation
-            ? `${fullName} - ${designation}. View ${fullName}'s professional profile, experience, and connect on The Talent Club.`
-            : `View ${fullName}'s professional profile and connect on The Talent Club.`,
-          images: profileImage ? [
-            `https://nodejs.thetalentclub.co.in/upload/profile/${profileImage}`
-          ] : [],
+          description,
+          images: [profileImageUrl],
           creator: '@thetalentclub',
           site: '@thetalentclub',
         },
@@ -76,6 +78,7 @@ export async function generateMetadata({ params }) {
         },
         other: {
           'whatsapp-meta': 'true',
+          'og:image:secure_url': profileImageUrl,
         },
       };
     }
@@ -96,11 +99,12 @@ export async function generateMetadata({ params }) {
       url: `https://thetalentclub.co.in/share/${userId}`,
       images: [
         {
-          url: 'https://thetalentclub.co.in/public/whitelogo.png',
+          url: 'https://thetalentclub.co.in/whitelogo.png',
           width: 400,
           height: 400,
           alt: 'The Talent Club Logo',
-          type: 'image/png'
+          type: 'image/png',
+          secureUrl: 'https://thetalentclub.co.in/whitelogo.png'
         }
       ],
     },
@@ -108,7 +112,7 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title: "Professional Profile | The Talent Club",
       description: "Discover professional profiles and connect with talented individuals on The Talent Club.",
-      images: ['https://thetalentclub.co.in/public/whitelogo.png'],
+      images: ['https://thetalentclub.co.in/whitelogo.png'],
       creator: '@thetalentclub',
       site: '@thetalentclub',
     },
@@ -121,6 +125,7 @@ export async function generateMetadata({ params }) {
     },
     other: {
       'whatsapp-meta': 'true',
+      'og:image:secure_url': 'https://thetalentclub.co.in/whitelogo.png',
     },
   };
 }
