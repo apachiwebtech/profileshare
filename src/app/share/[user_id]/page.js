@@ -131,11 +131,18 @@ export async function generateMetadata({ params }) {
 }
 
 // For static generation, list the user IDs you want to pre-render
+// This is only needed when using output: 'export'
 export async function generateStaticParams() {
-  // In production, you might want to fetch this list from your API
+  // If you're not using static export, you can return an empty array
+  // or comment out this function entirely
+  
+  // List of user IDs that should be pre-generated
+  // Add all user IDs that you want to support in static generation
   const userIds = [
     'bhoomika-ravikumar',
-    // Add more user IDs as needed
+    'sagar-koparkar',
+    // Add more user IDs here as needed
+    // You can also fetch this list from your API if needed
   ];
   
   // Pre-fetch data for each user to validate the IDs and ensure data exists
@@ -143,10 +150,13 @@ export async function generateStaticParams() {
     userIds.map(async (id) => {
       try {
         const data = await fetchUserData(id);
-        return data && data.length > 0 ? { user_id: id } : null;
+        // Return the ID even if API fails, to avoid build errors
+        // The page will handle missing data gracefully
+        return { user_id: id };
       } catch (error) {
         console.error(`Error fetching data for user ${id}:`, error);
-        return null;
+        // Return the ID even if API fails, to avoid build errors
+        return { user_id: id };
       }
     })
   );
